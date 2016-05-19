@@ -16,7 +16,7 @@ class Rundeck():
     def __init__(self, rundeck_url, token=None, username=None, password=None,
                  api_version=17, verify=True):
         self.rundeck_url = rundeck_url
-        self.API_URL = '{}/api/{}'.format(hostname, api_version)
+        self.API_URL = '{}/api/{}'.format(rundeck_url, api_version)
         self.token = token
         self.username = username
         self.password = password
@@ -144,15 +144,14 @@ class Rundeck():
 
 if __name__ == '__main__':
     from pprint import pprint
-    hostname = os.environ.get('RUNDECK_URL')
+    rundeck_url = os.environ.get('RUNDECK_URL')
     username = os.environ.get('RUNDECK_USER')
     password = os.environ.get('RUNDECK_PASS')
-    assert hostname, 'Hostname is required'
+    assert rundeck_url, 'Rundeck URL is required'
     assert username, 'Username is required'
     assert password, 'Password is required'
-    print(hostname, username, password)
     rd = Rundeck(
-        hostname, username=username, password=password,
+        rundeck_url, username=username, password=password,
         verify=False
     )
     pprint(rd.list_projects())

@@ -27,6 +27,7 @@ setup(
     name='pyrundeck',
     version='0.9',
     description='Python REST API client for Rundeck 2.6+',
+    long_description=read('README.md'),
     author='Philipp Schmitt',
     author_email='philipp.schmitt@post.lu',
     url='https://github.com/pschmitt/pyrundeck',

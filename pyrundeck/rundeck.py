@@ -37,7 +37,7 @@ class Rundeck():
         h = {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
-            'X-Rundeck-Auth-Toke': self.token
+            'X-Rundeck-Auth-Token': self.token
         }
         r = requests.request(
             method, url, cookies=cookies, headers=h, json=params,

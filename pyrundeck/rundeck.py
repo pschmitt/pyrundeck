@@ -141,6 +141,10 @@ class Rundeck():
         url = '{}/project/{}/executions/running'.format(self.API_URL, project)
         return self.__get(url)
 
+    def list_jobs_by_group(self, project, groupPath=None):
+        url = '{}/project/{}/jobs'.format(self.API_URL, project)
+        params = { 'groupPath': groupPath }
+        return self.__post(url, params=params)
 
 if __name__ == '__main__':
     from pprint import pprint

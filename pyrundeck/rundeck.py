@@ -143,6 +143,9 @@ class Rundeck():
 
     def execution_output_by_id(self, exec_id):
         url = '{}/execution/{}/output'.format(self.API_URL, exec_id)
+
+    def execution_info_by_id(self, exec_id):
+        url = '{}/execution/{}'.format(self.API_URL, exec_id)
         return self.__get(url)
 
 if __name__ == '__main__':

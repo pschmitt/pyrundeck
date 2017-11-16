@@ -141,6 +141,9 @@ class Rundeck():
         url = '{}/project/{}/executions/running'.format(self.API_URL, project)
         return self.__get(url)
 
+    def execution_output_by_id(self, exec_id):
+        url = '{}/execution/{}/output'.format(self.API_URL, exec_id)
+        return self.__get(url)
 
 if __name__ == '__main__':
     from pprint import pprint

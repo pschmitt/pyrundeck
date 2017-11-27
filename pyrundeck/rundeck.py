@@ -145,6 +145,20 @@ class Rundeck():
         url = '{}/execution/{}/state'.format(self.API_URL, exec_id)
         return self.__get(url)
 
+    def list_jobs_by_group(self, project, groupPath=None):
+        url = '{}/project/{}/jobs'.format(self.API_URL, project)
+        params = { 'groupPath': groupPath }
+        return self.__post(url, params=params)
+
+    def execution_output_by_id(self, exec_id):
+        url = '{}/execution/{}/output'.format(self.API_URL, exec_id)
+        return self.__get(url)
+        
+    def execution_info_by_id(self, exec_id):
+        url = '{}/execution/{}'.format(self.API_URL, exec_id)
+        return self.__get(url)
+      
+      
 if __name__ == '__main__':
     from pprint import pprint
     rundeck_url = os.environ.get('RUNDECK_URL')

@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 class Rundeck():
     def __init__(self, rundeck_url, token=None, username=None, password=None,
-                 api_version=17, verify=True):
+                 api_version=18, verify=True):
         self.rundeck_url = rundeck_url
         self.API_URL = '{}/api/{}'.format(rundeck_url, api_version)
         self.token = token

@@ -121,15 +121,18 @@ class Rundeck():
                 jobs += self.list_jobs(p['name'])
         return next(job for job in jobs if job['name'] == name)
 
-    def run_job(self, job_id, args=None, log_level=None, as_user=None,
+    def run_job(self, job_id, args=None, options=None, log_level=None, as_user=None,
                 node_filter=None):
         url = '{}/job/{}/run'.format(self.API_URL, job_id)
         params = {
-            'argString': args,
             'logLevel': log_level,
             'asUser': as_user,
             'filter': node_filter
         }
+        if (options == None):
+            params["argString"] = args
+        else:
+            params["options"] = options
         return self.__post(url, params=params)
 
     def run_job_by_name(self, name, args=None, log_level=None, as_user=None,
@@ -153,12 +156,12 @@ class Rundeck():
     def execution_output_by_id(self, exec_id):
         url = '{}/execution/{}/output'.format(self.API_URL, exec_id)
         return self.__get(url)
-        
+
     def execution_info_by_id(self, exec_id):
         url = '{}/execution/{}'.format(self.API_URL, exec_id)
         return self.__get(url)
-      
-      
+
+
 if __name__ == '__main__':
     from pprint import pprint
     rundeck_url = os.environ.get('RUNDECK_URL')

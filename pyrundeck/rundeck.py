@@ -161,6 +161,9 @@ class Rundeck():
         url = '{}/execution/{}'.format(self.API_URL, exec_id)
         return self.__get(url)
 
+    def abort_execution(self, exec_id):
+        url = '{}/execution/{}/abort'.format(self.API_URL, exec_id)
+        return self.__get(url)
 
 if __name__ == '__main__':
     from pprint import pprint

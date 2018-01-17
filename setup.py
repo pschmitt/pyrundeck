@@ -25,7 +25,7 @@ def requirements(requirements_file='requirements.txt'):
 
 setup(
     name='pyrundeck',
-    version='0.9',
+    version='0.9.1',
     description='Python REST API client for Rundeck 2.6+',
     long_description=read('README.md'),
     author='Philipp Schmitt',

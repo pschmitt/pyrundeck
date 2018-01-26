@@ -7,6 +7,7 @@ from __future__ import print_function
 import logging
 import os
 import requests
+import urlparse
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
@@ -16,7 +17,7 @@ class Rundeck():
     def __init__(self, rundeck_url, token=None, username=None, password=None,
                  api_version=18, verify=True):
         self.rundeck_url = rundeck_url
-        self.API_URL = '{}/api/{}'.format(rundeck_url, api_version)
+        self.API_URL = urlparse.urljoin(rundeck_url, '/api/{}'.format(api_version))
         self.token = token
         self.username = username
         self.password = password
@@ -24,7 +25,7 @@ class Rundeck():
         self.auth_cookie = self.auth()
 
     def auth(self):
-        url = '{}/j_security_check'.format(self.rundeck_url)
+        url = urlparse.urljoin(self.rundeck_url,'/j_security_check')
         p = {'j_username': self.username, 'j_password': self.password}
         # Disable redirects, otherwise we get redirected twice and need to
         # return r.history[0].cookies['JSESSIONID']

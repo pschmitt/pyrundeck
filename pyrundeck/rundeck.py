@@ -7,7 +7,12 @@ from __future__ import print_function
 import logging
 import os
 import requests
-import urlparse
+try:
+    # Python 2
+    from urlparse import urljoin
+except ModuleNotFoundError:
+    # Python 3
+    from urllib.parse import urljoin
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
@@ -17,7 +22,7 @@ class Rundeck():
     def __init__(self, rundeck_url, token=None, username=None, password=None,
                  api_version=18, verify=True):
         self.rundeck_url = rundeck_url
-        self.API_URL = urlparse.urljoin(rundeck_url, '/api/{}'.format(api_version))
+        self.API_URL = urljoin(rundeck_url, '/api/{}'.format(api_version))
         self.token = token
         self.username = username
         self.password = password
@@ -25,11 +30,15 @@ class Rundeck():
         self.auth_cookie = self.auth()
 
     def auth(self):
-        url = urlparse.urljoin(self.rundeck_url,'/j_security_check')
+        url = urljoin(self.rundeck_url, '/j_security_check')
         p = {'j_username': self.username, 'j_password': self.password}
-        # Disable redirects, otherwise we get redirected twice and need to
-        # return r.history[0].cookies['JSESSIONID']
-        r = requests.post(url, params=p, verify=self.verify, allow_redirects=False)
+        r = requests.post(
+            url,
+            params=p,
+            verify=self.verify,
+            # Disable redirects, otherwise we get redirected twice and need to
+            # return r.history[0].cookies['JSESSIONID']
+            allow_redirects=False)
         return r.cookies['JSESSIONID']
 
     def __request(self, method, url, params=None):
@@ -122,15 +131,15 @@ class Rundeck():
                 jobs += self.list_jobs(p['name'])
         return next(job for job in jobs if job['name'] == name)
 
-    def run_job(self, job_id, args=None, options=None, log_level=None, as_user=None,
-                node_filter=None):
+    def run_job(self, job_id, args=None, options=None, log_level=None,
+                as_user=None, node_filter=None):
         url = '{}/job/{}/run'.format(self.API_URL, job_id)
         params = {
             'logLevel': log_level,
             'asUser': as_user,
             'filter': node_filter
         }
-        if (options == None):
+        if options is None:
             params["argString"] = args
         else:
             params["options"] = options
@@ -151,7 +160,7 @@ class Rundeck():
 
     def list_jobs_by_group(self, project, groupPath=None):
         url = '{}/project/{}/jobs'.format(self.API_URL, project)
-        params = { 'groupPath': groupPath }
+        params = {'groupPath': groupPath}
         return self.__post(url, params=params)
 
     def execution_output_by_id(self, exec_id):
@@ -165,6 +174,7 @@ class Rundeck():
     def abort_execution(self, exec_id):
         url = '{}/execution/{}/abort'.format(self.API_URL, exec_id)
         return self.__get(url)
+
 
 if __name__ == '__main__':
     from pprint import pprint

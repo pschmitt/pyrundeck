@@ -145,10 +145,9 @@ class Rundeck():
             params["options"] = options
         return self.__post(url, params=params)
 
-    def run_job_by_name(self, name, args=None, log_level=None, as_user=None,
-                        node_filter=None):
+    def run_job_by_name(self, name, *args, **kwargs):
         job = self.get_job(name)
-        return self.run_job(job['id'], args, log_level, as_user, node_filter)
+        return self.run_job(job['id'], *args, **kwargs)
 
     def list_running_executions(self, project):
         url = '{}/project/{}/executions/running'.format(self.API_URL, project)

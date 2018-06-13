@@ -5,7 +5,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='pyrundeck',
-    version='0.9.3',
+    version='0.9.4',
     description='Python REST API client for Rundeck 2.6+',
     long_description=open('README.md', 'r').read(),
     long_description_content_type='text/markdown',

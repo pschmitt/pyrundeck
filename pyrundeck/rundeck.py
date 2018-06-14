@@ -149,6 +149,20 @@ class Rundeck():
         job = self.get_job(name)
         return self.run_job(job['id'], *args, **kwargs)
 
+    def query_executions(self, project, name=None, group=None, status=None,
+                         user=None, recent=None, adhoc=None):
+        # http://rundeck.org/docs/api/#execution-query
+        url = '{}/project/{}/executions'.format(self.API_URL, project)
+        params = {
+            'jobListFilter': name,
+            'userFilter': user,
+            'groupPath': group,
+            'statusFilter': status,
+            'adhoc': adhoc,
+            'recentFilter': recent
+        }
+        return self.__get(url, params=params)
+
     def list_running_executions(self, project):
         url = '{}/project/{}/executions/running'.format(self.API_URL, project)
         return self.__get(url)

@@ -149,6 +149,15 @@ class Rundeck():
         job = self.get_job(name)
         return self.run_job(job['id'], *args, **kwargs)
 
+    def get_executions_for_job(self, job_id=None, job_name=None):
+        # http://rundeck.org/docs/api/#getting-executions-for-a-job
+        if not job_id:
+            if not job_name:
+                raise RuntimeError("Either job_name or job_id is required")
+            job_id = self.get_job(job_name).get('id')
+        url = '{}/job/{}/executions'.format(self.API_URL, job_id)
+        return self.__get(url)
+
     def query_executions(self, project, name=None, group=None, status=None,
                          user=None, recent=None, adhoc=None):
         # http://rundeck.org/docs/api/#execution-query

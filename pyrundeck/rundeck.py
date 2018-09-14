@@ -14,7 +14,6 @@ except ModuleNotFoundError:
     # Python 3
     from urllib.parse import urljoin
 
-logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 

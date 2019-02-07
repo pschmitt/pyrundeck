@@ -159,7 +159,8 @@ class Rundeck():
         return self.__get(url)
 
     def query_executions(self, project, name=None, group=None, status=None,
-                         user=None, recent=None, adhoc=None):
+                         user=None, recent=None, older=None, begin=None,
+                         end=None, adhoc=None, max_results=20, offset=0):
         # http://rundeck.org/docs/api/#execution-query
         url = '{}/project/{}/executions'.format(self.API_URL, project)
         params = {
@@ -168,8 +169,14 @@ class Rundeck():
             'groupPath': group,
             'statusFilter': status,
             'adhoc': adhoc,
-            'recentFilter': recent
+            'recentFilter': recent,
+            'olderFilter': older,
+            'begin': begin,
+            'end': end,
+            'max': max_results,
+            'offset': offset
         }
+        params = {k: v for k, v in params.items() if v is not None}
         return self.__get(url, params=params)
 
     def list_running_executions(self, project):

@@ -204,6 +204,15 @@ class Rundeck():
         url = '{}/execution/{}/abort'.format(self.API_URL, exec_id)
         return self.__get(url)
 
+    def delete_execution(self, exec_id):
+        url = '{}/execution/{}'.format(self.API_URL, exec_id)
+        return self.__delete(url)
+
+    def bulk_delete_executions(self, exec_ids):
+        url = '{}/executions/{}/delete'.format(self.API_URL)
+        params = {'ids': exec_ids}
+        return self.__post(url, params=params)
+
 
 if __name__ == '__main__':
     from pprint import pprint

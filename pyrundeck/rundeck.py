@@ -33,7 +33,7 @@ class Rundeck():
         p = {'j_username': self.username, 'j_password': self.password}
         r = requests.post(
             url,
-            params=p,
+            data=p,
             verify=self.verify,
             # Disable redirects, otherwise we get redirected twice and need to
             # return r.history[0].cookies['JSESSIONID']

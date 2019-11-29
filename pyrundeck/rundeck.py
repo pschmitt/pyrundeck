@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 class Rundeck():
     def __init__(self, rundeck_url, token=None, username=None, password=None,
-                 api_version=18, verify=True):
+                 api_version=32, verify=True):
         self.rundeck_url = rundeck_url
         self.API_URL = urljoin(rundeck_url, '/api/{}'.format(api_version))
         self.token = token
@@ -136,6 +136,15 @@ class Rundeck():
             for p in self.list_projects():
                 jobs += self.list_jobs(p['name'])
         return next(job for job in jobs if job['name'] == name)
+
+    def get_running_jobs(self, project, job_id=None):
+        url = '{}/project/{}/executions/running'.format(self.API_URL, project)
+        params = None
+        if job_id is not None:
+            params = {
+                'jobIdFilter': job_id,
+            }
+        return self.__get(url, params=params)
 
     def run_job(self, job_id, args=None, options=None, log_level=None,
                 as_user=None, node_filter=None):

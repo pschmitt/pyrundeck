@@ -48,10 +48,17 @@ class Rundeck():
             'Content-Type': 'application/json',
             'X-Rundeck-Auth-Token': self.token
         }
-        r = requests.request(
-            method, url, cookies=cookies, headers=h, json=params,
-            verify=self.verify
-        )
+        options = {
+            'cookies': cookies,
+            'headers': h,
+            'verify': self.verify,
+        }
+        if method == 'GET':
+            options['params'] = params
+        else:
+            options['json'] = params
+
+        r = requests.request(method, url, **options)
         logger.debug(r.content)
         r.raise_for_status()
         try:

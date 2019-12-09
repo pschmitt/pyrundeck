@@ -2,8 +2,8 @@
 
 This is a Python REST API client for Rundeck 2.6+
 
-The current version needs Rundeck 3.1+ but many parts still work
-with older versions of Rundeck if you specify a lower `api_version` argument.
+Some function or options required are newer Rundeck version and you need to pass
+a associated `api_version` to the constructor.
 
 ## Example
 
@@ -12,7 +12,7 @@ from pyrundeck import Rundeck
 
 rundeck = Rundeck('http://rundeck-url',
                   token='sometoken',
-                  api_version=30,  # this is not mandatory
+                  api_version=32,  # this is not mandatory, it defaults to 18
                  )
 
 run = rundeck.run_job(RUNDECK_JOB_ID, options={'option1': 'foo'})

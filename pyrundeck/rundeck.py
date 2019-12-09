@@ -26,7 +26,9 @@ class Rundeck():
         self.username = username
         self.password = password
         self.verify = verify
-        self.auth_cookie = self.auth()
+        self.auth_cookie = None
+        if self.token is None:
+            self.auth_cookie = self.auth()
 
     def auth(self):
         url = urljoin(self.rundeck_url, '/j_security_check')
@@ -42,7 +44,10 @@ class Rundeck():
 
     def __request(self, method, url, params=None):
         logger.info('{} {} Params: {}'.format(method, url, params))
-        cookies = {'JSESSIONID': self.auth_cookie}
+        cookies = dict()
+        if self.auth_cookie:
+            cookies['JSESSIONID'] = self.auth_cookie
+
         h = {
             'Accept': 'application/json',
             'Content-Type': 'application/json',

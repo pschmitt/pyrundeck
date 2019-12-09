@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 class Rundeck():
     def __init__(self, rundeck_url, token=None, username=None, password=None,
-                 api_version=32, verify=True):
+                 api_version=18, verify=True):
         self.rundeck_url = rundeck_url
         self.API_URL = urljoin(rundeck_url, '/api/{}'.format(api_version))
         self.token = token
@@ -138,6 +138,7 @@ class Rundeck():
         return next(job for job in jobs if job['name'] == name)
 
     def get_running_jobs(self, project, job_id=None):
+        """This requires API version 32"""
         url = '{}/project/{}/executions/running'.format(self.API_URL, project)
         params = None
         if job_id is not None:

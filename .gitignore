@@ -1,6 +1,7 @@
 .ropeproject/
-*.pyc
+*.py[oc]
 dist/
 build/
 *.spec
 *.egg-info/
+*~

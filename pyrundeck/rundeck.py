@@ -26,14 +26,16 @@ class Rundeck():
         self.username = username
         self.password = password
         self.verify = verify
-        self.auth_cookie = self.auth()
+        self.auth_cookie = None
+        if self.token is None:
+            self.auth_cookie = self.auth()
 
     def auth(self):
         url = urljoin(self.rundeck_url, '/j_security_check')
         p = {'j_username': self.username, 'j_password': self.password}
         r = requests.post(
             url,
-            params=p,
+            data=p,
             verify=self.verify,
             # Disable redirects, otherwise we get redirected twice and need to
             # return r.history[0].cookies['JSESSIONID']
@@ -42,16 +44,26 @@ class Rundeck():
 
     def __request(self, method, url, params=None):
         logger.info('{} {} Params: {}'.format(method, url, params))
-        cookies = {'JSESSIONID': self.auth_cookie}
+        cookies = dict()
+        if self.auth_cookie:
+            cookies['JSESSIONID'] = self.auth_cookie
+
         h = {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
             'X-Rundeck-Auth-Token': self.token
         }
-        r = requests.request(
-            method, url, cookies=cookies, headers=h, json=params,
-            verify=self.verify
-        )
+        options = {
+            'cookies': cookies,
+            'headers': h,
+            'verify': self.verify,
+        }
+        if method == 'GET':
+            options['params'] = params
+        else:
+            options['json'] = params
+
+        r = requests.request(method, url, **options)
         logger.debug(r.content)
         r.raise_for_status()
         try:
@@ -130,6 +142,16 @@ class Rundeck():
                 jobs += self.list_jobs(p['name'])
         return next(job for job in jobs if job['name'] == name)
 
+    def get_running_jobs(self, project, job_id=None):
+        """This requires API version 32"""
+        url = '{}/project/{}/executions/running'.format(self.API_URL, project)
+        params = None
+        if job_id is not None:
+            params = {
+                'jobIdFilter': job_id,
+            }
+        return self.__get(url, params=params)
+
     def run_job(self, job_id, args=None, options=None, log_level=None,
                 as_user=None, node_filter=None):
         url = '{}/job/{}/run'.format(self.API_URL, job_id)
@@ -148,14 +170,14 @@ class Rundeck():
         job = self.get_job(name)
         return self.run_job(job['id'], *args, **kwargs)
 
-    def get_executions_for_job(self, job_id=None, job_name=None):
+    def get_executions_for_job(self, job_id=None, job_name=None, **kwargs):
         # http://rundeck.org/docs/api/#getting-executions-for-a-job
         if not job_id:
             if not job_name:
                 raise RuntimeError("Either job_name or job_id is required")
             job_id = self.get_job(job_name).get('id')
         url = '{}/job/{}/executions'.format(self.API_URL, job_id)
-        return self.__get(url)
+        return self.__get(url, params=kwargs)
 
     def query_executions(self, project, name=None, group=None, status=None,
                          user=None, recent=None, older=None, begin=None,

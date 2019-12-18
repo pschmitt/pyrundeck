@@ -10,7 +10,7 @@ setup(
     long_description=open('README.md', 'r').read(),
     long_description_content_type='text/markdown',
     author='Philipp Schmitt',
-    author_email='philipp.schmitt@post.lu',
+    author_email='philipp@schmitt.co',
     url='https://github.com/pschmitt/pyrundeck',
     packages=find_packages(),
     include_package_data=True,

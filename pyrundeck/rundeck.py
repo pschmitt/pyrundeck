@@ -49,9 +49,12 @@ class Rundeck(object):
 
         h = {
             "Accept": "application/json",
-            "Content-Type": "application/json",
             "X-Rundeck-Auth-Token": self.token,
         }
+        # See https://github.com/rundeck/rundeck/issues/1923
+        if method in ("POST", "PUT"):
+            h["Content-Type"] = "application/json"
+
         options = {
             "cookies": cookies,
             "headers": h,

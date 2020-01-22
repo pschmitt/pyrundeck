@@ -54,7 +54,6 @@ class Rundeck():
         }
         # See https://github.com/rundeck/rundeck/issues/1923
         if method in ("POST", "PUT"):
-            https://github.com/rundeck/rundeck/issues/1923
             h['Content-Type']= 'application/json'
 
         options = {

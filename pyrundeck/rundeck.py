@@ -236,9 +236,20 @@ class Rundeck(object):
         params = {"groupPath": groupPath}
         return self.__post(url, params=params)
 
-    def execution_output_by_id(self, exec_id):
+    def execution_output_by_id(self, exec_id, output_format=None):
         url = f"{self.API_URL}/execution/{exec_id}/output"
-        return self.__get(url)
+        params = {}
+        headers = {}
+        if output_format:
+            params["format"] = output_format
+            if output_format == "xml":
+                headers["Accept"] = "application/xml"
+            elif output_format == "json":
+                headers["Accept"] = "application/json"
+            elif output_format == "text":
+                headers["Accept"] = "text/plain"
+
+        return self.__get(url, params=params, headers=headers)
 
     def execution_info_by_id(self, exec_id):
         url = f"{self.API_URL}/execution/{exec_id}"

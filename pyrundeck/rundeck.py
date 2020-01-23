@@ -272,12 +272,12 @@ class Rundeck(object):
 if __name__ == "__main__":
     from pprint import pprint
 
-    rundeck_url = os.environ.get("RUNDECK_URL")
-    username = os.environ.get("RUNDECK_USER")
-    password = os.environ.get("RUNDECK_PASS")
-    assert rundeck_url, "Rundeck URL is required"
-    assert username, "Username is required"
-    assert password, "Password is required"
-    rd = Rundeck(rundeck_url, username=username, password=password, verify=False)
+    rundeck_url_ = os.environ.get("RUNDECK_URL")
+    username_ = os.environ.get("RUNDECK_USER")
+    password_ = os.environ.get("RUNDECK_PASS")
+    assert rundeck_url_, "Rundeck URL is required"
+    assert username_, "Username is required"
+    assert password_, "Password is required"
+    rd = Rundeck(rundeck_url_, username=username_, password=password_, verify=False)
     pprint(rd.list_projects())
     pprint(rd.list_all_jobs())

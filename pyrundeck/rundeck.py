@@ -41,7 +41,7 @@ class Rundeck(object):
         )
         return r.cookies["JSESSIONID"]
 
-    def __request(self, method, url, params=None):
+    def __request(self, method, url, params=None, headers={}):
         logger.info(f"{method} {url} Params: {params}")
         cookies = dict()
         if self.auth_cookie:
@@ -54,6 +54,9 @@ class Rundeck(object):
         # See https://github.com/rundeck/rundeck/issues/1923
         if method in ("POST", "PUT"):
             h["Content-Type"] = "application/json"
+
+        # Allow end-users to override headers (ex. "Accept": "text/plain")
+        h.update(headers)
 
         options = {
             "cookies": cookies,
@@ -69,19 +72,22 @@ class Rundeck(object):
         logger.debug(r.content)
         r.raise_for_status()
         try:
-            return r.json()
+            if h["Accept"] == "application/json":
+                return r.json()
+            else:
+                return r.text
         except ValueError as e:
             logger.error(e.message)
             return r.content
 
-    def __get(self, url, params=None):
-        return self.__request("GET", url, params)
+    def __get(self, url, params=None, headers={}):
+        return self.__request("GET", url, params, headers)
 
-    def __post(self, url, params=None):
-        return self.__request("POST", url, params)
+    def __post(self, url, params=None, headers={}):
+        return self.__request("POST", url, params, headers)
 
-    def __delete(self, url, params=None):
-        return self.__request("DELETE", url, params)
+    def __delete(self, url, params=None, headers={}):
+        return self.__request("DELETE", url, params, headers)
 
     def list_tokens(self, user=None):
         url = f"{self.API_URL}/tokens"

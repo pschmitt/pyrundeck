@@ -1,17 +1,9 @@
 #!/usr/bin/env python
 # coding: utf-8
-from __future__ import unicode_literals
-from __future__ import print_function
 import logging
 import os
 import requests
-
-try:
-    # Python 2
-    from urlparse import urljoin
-except ModuleNotFoundError:
-    # Python 3
-    from urllib.parse import urljoin
+from urllib.parse import urljoin
 
 logger = logging.getLogger(__name__)
 
@@ -27,7 +19,7 @@ class Rundeck(object):
         verify=True,
     ):
         self.rundeck_url = rundeck_url
-        self.API_URL = urljoin(rundeck_url, "/api/{}".format(api_version))
+        self.API_URL = urljoin(rundeck_url, f"/api/{api_version}")
         self.token = token
         self.username = username
         self.password = password
@@ -50,7 +42,7 @@ class Rundeck(object):
         return r.cookies["JSESSIONID"]
 
     def __request(self, method, url, params=None):
-        logger.info("{} {} Params: {}".format(method, url, params))
+        logger.info(f"{method} {url} Params: {params}")
         cookies = dict()
         if self.auth_cookie:
             cookies["JSESSIONID"] = self.auth_cookie
@@ -89,49 +81,49 @@ class Rundeck(object):
         return self.__request("DELETE", url, params)
 
     def list_tokens(self, user=None):
-        url = "{}/tokens".format(self.API_URL)
+        url = f"{self.API_URL}/tokens"
         if user:
-            url += "/{}".format(user)
+            url += f"/{user}"
         return self.__get(url)
 
     def get_token(self, token_id):
-        url = "{}/token/{}".format(self.API_URL, token_id)
+        url = f"{self.API_URL}/token/{token_id}"
         return self.__get(url)
 
     def create_token(self, user):
-        url = "{}/tokens/{}".format(self.API_URL, user)
+        url = f"{self.API_URL}/tokens/{user}"
         return self.__post(url)
 
     def delete_token(self, token_id):
-        url = "{}/token/{}".format(self.API_URL, token_id)
+        url = f"{self.API_URL}/token/{token_id}"
         return self.__delete(url)
 
     def system_info(self):
-        url = "{}/system/info".format(self.API_URL)
+        url = f"{self.API_URL}/system/info"
         return self.__get(url)
 
     def set_active_mode(self):
-        url = "{}/system/executions/enable".format(self.API_URL)
+        url = f"{self.API_URL}/system/executions/enable"
         return self.__post(url)
 
     def set_passive_mode(self):
-        url = "{}/system/executions/disable".format(self.API_URL)
+        url = f"{self.API_URL}/system/executions/disable"
         return self.__post(url)
 
     def list_system_acl_policies(self):
-        url = "{}/system/acl/".format(self.API_URL)
+        url = f"{self.API_URL}/system/acl/"
         return self.__get(url)
 
     def get_acl_policy(self, policy):
-        url = "{}/system/acl/{}".format(self.API_URL, policy)
+        url = f"{self.API_URL}/system/acl/{policy}"
         return self.__get(url)
 
     def list_projects(self):
-        url = "{}/projects".format(self.API_URL)
+        url = f"{self.API_URL}/projects"
         return self.__get(url)
 
     def list_jobs(self, project):
-        url = "{}/project/{}/jobs".format(self.API_URL, project)
+        url = f"{self.API_URL}/project/{project}/jobs"
         return self.__get(url)
 
     def list_all_jobs(self):
@@ -151,7 +143,7 @@ class Rundeck(object):
 
     def get_running_jobs(self, project, job_id=None):
         """This requires API version 32"""
-        url = "{}/project/{}/executions/running".format(self.API_URL, project)
+        url = f"{self.API_URL}/project/{project}/executions/running"
         params = None
         if job_id is not None:
             params = {
@@ -168,7 +160,7 @@ class Rundeck(object):
         as_user=None,
         node_filter=None,
     ):
-        url = "{}/job/{}/run".format(self.API_URL, job_id)
+        url = f"{self.API_URL}/job/{job_id}/run"
         params = {"logLevel": log_level, "asUser": as_user, "filter": node_filter}
         if options is None:
             params["argString"] = args
@@ -186,7 +178,7 @@ class Rundeck(object):
             if not job_name:
                 raise RuntimeError("Either job_name or job_id is required")
             job_id = self.get_job(job_name).get("id")
-        url = "{}/job/{}/executions".format(self.API_URL, job_id)
+        url = f"{self.API_URL}/job/{job_id}/executions"
         return self.__get(url, params=kwargs)
 
     def query_executions(
@@ -205,7 +197,7 @@ class Rundeck(object):
         offset=0,
     ):
         # http://rundeck.org/docs/api/#execution-query
-        url = "{}/project/{}/executions".format(self.API_URL, project)
+        url = f"{self.API_URL}/project/{project}/executions"
         params = {
             "jobListFilter": name,
             "userFilter": user,
@@ -223,36 +215,36 @@ class Rundeck(object):
         return self.__get(url, params=params)
 
     def list_running_executions(self, project):
-        url = "{}/project/{}/executions/running".format(self.API_URL, project)
+        url = f"{self.API_URL}/project/{project}/executions/running"
         return self.__get(url)
 
     def execution_state(self, exec_id):
-        url = "{}/execution/{}/state".format(self.API_URL, exec_id)
+        url = f"{self.API_URL}/execution/{exec_id}/state"
         return self.__get(url)
 
     def list_jobs_by_group(self, project, groupPath=None):
-        url = "{}/project/{}/jobs".format(self.API_URL, project)
+        url = f"{self.API_URL}/project/{project}/jobs"
         params = {"groupPath": groupPath}
         return self.__post(url, params=params)
 
     def execution_output_by_id(self, exec_id):
-        url = "{}/execution/{}/output".format(self.API_URL, exec_id)
+        url = f"{self.API_URL}/execution/{exec_id}/output"
         return self.__get(url)
 
     def execution_info_by_id(self, exec_id):
-        url = "{}/execution/{}".format(self.API_URL, exec_id)
+        url = f"{self.API_URL}/execution/{exec_id}"
         return self.__get(url)
 
     def abort_execution(self, exec_id):
-        url = "{}/execution/{}/abort".format(self.API_URL, exec_id)
+        url = f"{self.API_URL}/execution/{exec_id}/abort"
         return self.__get(url)
 
     def delete_execution(self, exec_id):
-        url = "{}/execution/{}".format(self.API_URL, exec_id)
+        url = f"{self.API_URL}/execution/{exec_id}"
         return self.__delete(url)
 
     def bulk_delete_executions(self, exec_ids):
-        url = "{}/executions/{}/delete".format(self.API_URL)
+        url = f"{self.API_URL}/executions/delete"
         params = {"ids": exec_ids}
         return self.__post(url, params=params)
 

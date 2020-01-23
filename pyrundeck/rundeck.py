@@ -181,6 +181,16 @@ class Rundeck(object):
         job = self.get_job(name)
         return self.run_job(job["id"], *args, **kwargs)
 
+    def export_job(self, job_id, export_format="xml"):
+        """Export a single job definition in XML or YAML formats."""
+        url = f"{self.API_URL}/job/{job_id}"
+        params = {"format": export_format}
+        headers = {"Accept": "application/xml"}
+        if export_format == "yaml":
+            headers["Accept"] = "text/plain"
+
+        return self.__get(url, params=params, headers=headers)
+
     def get_executions_for_job(self, job_id=None, job_name=None, **kwargs):
         # http://rundeck.org/docs/api/#getting-executions-for-a-job
         if not job_id:

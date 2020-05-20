@@ -256,6 +256,14 @@ class Rundeck(object):
         params = {"ids": exec_ids}
         return self.__post(url, params=params)
 
+    def list_resources(self, project):
+        url = '{}/project/{}/resources'.format(self.API_URL, project)
+        return self.__get(url)
+
+    def get_resource_info(self, project, resource):
+        url = '{}/project/{}/resource/{}'.format(self.API_URL, project, resource)
+        return self.__get(url)
+
 
 if __name__ == "__main__":
     from pprint import pprint

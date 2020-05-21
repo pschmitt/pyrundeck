@@ -169,7 +169,11 @@ class Rundeck(object):
         node_filter=None,
     ):
         url = "{}/job/{}/run".format(self.API_URL, job_id)
-        params = {"logLevel": log_level, "asUser": as_user, "filter": node_filter}
+        params = {
+            "logLevel": log_level,
+            "asUser": as_user,
+            "filter": node_filter,
+        }
         if options is None:
             params["argString"] = args
         else:
@@ -257,11 +261,13 @@ class Rundeck(object):
         return self.__post(url, params=params)
 
     def list_resources(self, project):
-        url = '{}/project/{}/resources'.format(self.API_URL, project)
+        url = "{}/project/{}/resources".format(self.API_URL, project)
         return self.__get(url)
 
     def get_resource_info(self, project, resource):
-        url = '{}/project/{}/resource/{}'.format(self.API_URL, project, resource)
+        url = "{}/project/{}/resource/{}".format(
+            self.API_URL, project, resource
+        )
         return self.__get(url)
 
 
@@ -274,6 +280,8 @@ if __name__ == "__main__":
     assert rundeck_url, "Rundeck URL is required"
     assert username, "Username is required"
     assert password, "Password is required"
-    rd = Rundeck(rundeck_url, username=username, password=password, verify=False)
+    rd = Rundeck(
+        rundeck_url, username=username, password=password, verify=False
+    )
     pprint(rd.list_projects())
     pprint(rd.list_all_jobs())

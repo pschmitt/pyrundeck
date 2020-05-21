@@ -1,9 +1,11 @@
 # Rundeck REST API client
 
-This is a Python REST API client for Rundeck 2.6+
+![PyPI](https://img.shields.io/pypi/v/pyrundeck)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/pyrundeck)
+![PyPI - License](https://img.shields.io/pypi/l/pyrundeck)
+![Python Lint](https://github.com/pschmitt/pyrundeck/workflows/Python%20Lint/badge.svg)
 
-Some function or options required are newer Rundeck version and you need to pass
-a associated `api_version` to the constructor.
+This is a Python REST API client for Rundeck 2.6+
 
 ## Example
 

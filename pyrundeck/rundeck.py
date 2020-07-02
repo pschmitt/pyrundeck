@@ -31,6 +31,7 @@ class Rundeck(object):
         self.token = token
         self.username = username
         self.password = password
+        self.api_version = api_version
         self.verify = verify
         self.auth_cookie = None
         if self.token is None:

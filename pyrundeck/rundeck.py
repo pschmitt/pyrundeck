@@ -99,9 +99,18 @@ class Rundeck(object):
         url = "{}/token/{}".format(self.API_URL, token_id)
         return self.__get(url)
 
-    def create_token(self, user):
+    def create_token(self, user, roles="*", duration=None):
         url = "{}/tokens/{}".format(self.API_URL, user)
-        return self.__post(url)
+        if self.api_version < 19:
+            params = None
+        else:
+            params = {
+                "user": user,
+                "roles": roles,
+                "duration": duration,
+            }
+            params = {k: v for k, v in params.items() if v is not None}
+        return self.__post(url, params=params)
 
     def delete_token(self, token_id):
         url = "{}/token/{}".format(self.API_URL, token_id)

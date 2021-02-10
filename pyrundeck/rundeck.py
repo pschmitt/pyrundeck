@@ -36,6 +36,14 @@ class Rundeck(object):
         self.auth_cookie = None
         if self.token is None:
             self.auth_cookie = self.auth()
+        self.root_log_level = logger.getEffectiveLevel()
+    
+    def __set_log_level(self, log_level=None, params=None):
+        if log_level:
+            logger.setLevel(log_level)
+        else:
+            if "logLevel" in params.keys():
+                logger.setLevel(params["logLevel"])
 
     def auth(self):
         url = urljoin(self.rundeck_url, "/j_security_check")
@@ -51,6 +59,7 @@ class Rundeck(object):
         return r.cookies["JSESSIONID"]
 
     def __request(self, method, url, params=None):
+        self.__set_log_level(params=params)
         logger.info("{} {} Params: {}".format(method, url, params))
         cookies = dict()
         if self.auth_cookie:
@@ -79,6 +88,7 @@ class Rundeck(object):
         except ValueError as e:
             logger.error(e.message)
             return r.content
+        self.__set_log_level(log_level=root_log_level)
 
     def __get(self, url, params=None):
         return self.__request("GET", url, params)
@@ -159,13 +169,14 @@ class Rundeck(object):
                 jobs += self.list_jobs(p["name"])
         return next(job for job in jobs if job["name"] == name)
 
-    def get_running_jobs(self, project, job_id=None):
+    def get_running_jobs(self, project, job_id=None, log_level=None):
         """This requires API version 32"""
         url = "{}/project/{}/executions/running".format(self.API_URL, project)
         params = None
         if job_id is not None:
             params = {
                 "jobIdFilter": job_id,
+                "logLevel": log_level if log_level else self.root_log_level
             }
         return self.__get(url, params=params)
 
@@ -180,7 +191,7 @@ class Rundeck(object):
     ):
         url = "{}/job/{}/run".format(self.API_URL, job_id)
         params = {
-            "logLevel": log_level,
+            "logLevel": log_level if log_level else self.root_log_level,
             "asUser": as_user,
             "filter": node_filter,
         }

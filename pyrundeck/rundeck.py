@@ -173,9 +173,19 @@ class Rundeck(object):
             }
         return self.__get(url, params=params)
 
-    def _post_file(self, file_name, file_obj, job_id, option_name, parameters=None):
-        url = "{}/job/{}/input/file?optionName={}&fileName={}".format(self.API_URL, job_id, option_name,
-                                                                      file_name)
+    def _post_file(
+            self,
+            file_name,
+            file_obj,
+            job_id,
+            option_name,
+            parameters=None
+    ):
+        url = "{}/job/{}/input/file?optionName={}&fileName={}".format(
+            self.API_URL,
+            job_id,
+            option_name,
+            file_name)
         return self.__post(url, params=parameters, upload_file=file_obj)
 
     def upload_file(self, job_id, option_name, file, params=None):
@@ -183,13 +193,22 @@ class Rundeck(object):
         if type(file) is str:
             name = file
             with open(name, 'rb') as file:
-                return self._post_file(name, file, job_id, option_name, params)
+                return self._post_file(name,
+                                       file,
+                                       job_id,
+                                       option_name,
+                                       params)
 
         elif type(file) is _io.TextIOWrapper:
-            return self._post_file('tempfile', file, job_id, option_name, params)
+            return self._post_file('tempfile',
+                                   file,
+                                   job_id,
+                                   option_name,
+                                   params)
 
         else:
-            raise TypeError("File is not a valid datatype. Please input a valid filepath or _io.TextIOWrapper object! "
+            raise TypeError("File is not a valid datatype. Please input a "
+                            "valid filepath or _io.TextIOWrapper object! "
                             "For example: file = open(path, 'rb')")
 
     def run_job(

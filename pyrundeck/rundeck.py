@@ -5,6 +5,7 @@ from __future__ import print_function
 import logging
 import os
 import requests
+import _io
 
 try:
     # Python 2
@@ -50,7 +51,7 @@ class Rundeck(object):
         )
         return r.cookies["JSESSIONID"]
 
-    def __request(self, method, url, params=None):
+    def __request(self, method, url, params=None, upload_file=None):
         logger.info("{} {} Params: {}".format(method, url, params))
         cookies = dict()
         if self.auth_cookie:
@@ -68,6 +69,9 @@ class Rundeck(object):
         }
         if method == "GET":
             options["params"] = params
+        elif upload_file is not None:
+            options['data'] = upload_file
+            options['headers']['Content-Type'] = 'octet/stream'
         else:
             options["json"] = params
 
@@ -83,8 +87,8 @@ class Rundeck(object):
     def __get(self, url, params=None):
         return self.__request("GET", url, params)
 
-    def __post(self, url, params=None):
-        return self.__request("POST", url, params)
+    def __post(self, url, params=None, upload_file=None):
+        return self.__request("POST", url, params, upload_file)
 
     def __delete(self, url, params=None):
         return self.__request("DELETE", url, params)
@@ -168,6 +172,25 @@ class Rundeck(object):
                 "jobIdFilter": job_id,
             }
         return self.__get(url, params=params)
+
+    def _post_file(self, file_name, file_obj, job_id, option_name, parameters=None):
+        url = "{}/job/{}/input/file?optionName={}&fileName={}".format(self.API_URL, job_id, option_name,
+                                                                      file_name)
+        return self.__post(url, params=parameters, upload_file=file_obj)
+
+    def upload_file(self, job_id, option_name, file, params=None):
+        """This requires API version 19"""
+        if type(file) is str:
+            name = file
+            with open(name, 'rb') as file:
+                return self._post_file(name, file, job_id, option_name, params)
+
+        elif type(file) is _io.TextIOWrapper:
+            return self._post_file('tempfile', file, job_id, option_name, params)
+
+        else:
+            raise TypeError("File is not a valid datatype. Please input a valid filepath or _io.TextIOWrapper object! "
+                            "For example: file = open(path, 'rb')")
 
     def run_job(
         self,

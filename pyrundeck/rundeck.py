@@ -179,7 +179,7 @@ class Rundeck(object):
             file_obj,
             job_id,
             option_name,
-            parameters=None
+            parameters=None,
     ):
         url = "{}/job/{}/input/file?optionName={}&fileName={}".format(
             self.API_URL,

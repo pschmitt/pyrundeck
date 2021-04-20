@@ -70,8 +70,8 @@ class Rundeck(object):
         if method == "GET":
             options["params"] = params
         elif upload_file is not None:
-            options['data'] = upload_file
-            options['headers']['Content-Type'] = 'octet/stream'
+            options["data"] = upload_file
+            options["headers"]["Content-Type"] = "octet/stream"
         else:
             options["json"] = params
 
@@ -174,42 +174,36 @@ class Rundeck(object):
         return self.__get(url, params=params)
 
     def _post_file(
-            self,
-            file_name,
-            file_obj,
-            job_id,
-            option_name,
-            parameters=None,
+        self,
+        file_name,
+        file_obj,
+        job_id,
+        option_name,
+        parameters=None,
     ):
         url = "{}/job/{}/input/file?optionName={}&fileName={}".format(
-            self.API_URL,
-            job_id,
-            option_name,
-            file_name)
+            self.API_URL, job_id, option_name, file_name
+        )
         return self.__post(url, params=parameters, upload_file=file_obj)
 
     def upload_file(self, job_id, option_name, file, params=None):
         """This requires API version 19"""
         if type(file) is str:
             name = file
-            with open(name, 'rb') as file:
-                return self._post_file(name,
-                                       file,
-                                       job_id,
-                                       option_name,
-                                       params)
+            with open(name, "rb") as file:
+                return self._post_file(name, file, job_id, option_name, params)
 
         elif type(file) is _io.TextIOWrapper:
-            return self._post_file('tempfile',
-                                   file,
-                                   job_id,
-                                   option_name,
-                                   params)
+            return self._post_file(
+                "tempfile", file, job_id, option_name, params
+            )
 
         else:
-            raise TypeError("File is not a valid datatype. Please input a "
-                            "valid filepath or _io.TextIOWrapper object! "
-                            "For example: file = open(path, 'rb')")
+            raise TypeError(
+                "File is not a valid datatype. Please input a "
+                "valid filepath or _io.TextIOWrapper object! "
+                "For example: file = open(path, 'rb')"
+            )
 
     def run_job(
         self,

@@ -27,7 +27,8 @@ class Rundeck(object):
         verify=True,
     ):
         self.rundeck_url = rundeck_url
-        self.API_URL = urljoin(rundeck_url, "/api/{}".format(api_version))
+        # ~ self.API_URL = urljoin(rundeck_url, "/api/{}".format(api_version))
+        self.API_URL = rundeck_url + "/api/{}".format(api_version)
         self.token = token
         self.username = username
         self.password = password

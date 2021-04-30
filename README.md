@@ -28,6 +28,24 @@ for job in running_jobs['executions']:
 A token can be generated in the 'profile' page of Rundeck. Alternatively you
 can login with a username and password.
 
+Example using the file upload option
+
+```python
+from pyrundeck import rundeck
+
+rd = Rundeck(
+        rundeck_url, 
+        username=username, 
+        password=password, 
+        verify=False, 
+        api_version=19  # Required for file upload option
+    )
+# Use the file_key returned in the response to reference the file when running a job
+# Per documentation at https://docs.rundeck.com/docs/api/rundeck-api.html#upload-a-file-for-a-job-option
+response = rd.upload_file(RUNDECK_JOB_ID, OPTION_NAME, FILE_NAME_STRING_OR_IOFILEWRAPPER)
+file_key = response['options'][OPTION_NAME]
+rd.run_job(RUNDECK_JOB_ID, options={OPTION_NAME: file_key})
+```
 
 ## See also
 

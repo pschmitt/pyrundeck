@@ -51,7 +51,9 @@ class Rundeck(object):
         )
         return r.cookies["JSESSIONID"]
 
-    def __request(self, method, url, params=None, upload_file=None, format="json"):
+    def __request(
+        self, method, url, params=None, upload_file=None, format="json"
+    ):
         logger.info("{} {} Params: {}".format(method, url, params))
         cookies = dict()
         if self.auth_cookie:
@@ -212,7 +214,9 @@ class Rundeck(object):
                 return self._post_file(name, file, job_id, option_name, params)
 
         elif type(file) is _io.TextIOWrapper:
-            return self._post_file("tempfile", file, job_id, option_name, params)
+            return self._post_file(
+                "tempfile", file, job_id, option_name, params
+            )
 
         else:
             raise TypeError(
@@ -327,7 +331,9 @@ class Rundeck(object):
         return self.__get(url)
 
     def get_resource_info(self, project, resource):
-        url = "{}/project/{}/resource/{}".format(self.API_URL, project, resource)
+        url = "{}/project/{}/resource/{}".format(
+            self.API_URL, project, resource
+        )
         return self.__get(url)
 
 
@@ -340,6 +346,8 @@ if __name__ == "__main__":
     assert rundeck_url, "Rundeck URL is required"
     assert username, "Username is required"
     assert password, "Password is required"
-    rd = Rundeck(rundeck_url, username=username, password=password, verify=False)
+    rd = Rundeck(
+        rundeck_url, username=username, password=password, verify=False
+    )
     pprint(rd.list_projects())
     pprint(rd.list_all_jobs())

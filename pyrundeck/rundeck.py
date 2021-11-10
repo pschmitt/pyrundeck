@@ -51,15 +51,17 @@ class Rundeck(object):
         )
         return r.cookies["JSESSIONID"]
 
-    def __request(self, method, url, params=None, upload_file=None):
+    def __request(
+        self, method, url, params=None, upload_file=None, format="json"
+    ):
         logger.info("{} {} Params: {}".format(method, url, params))
         cookies = dict()
         if self.auth_cookie:
             cookies["JSESSIONID"] = self.auth_cookie
 
         h = {
-            "Accept": "application/json",
-            "Content-Type": "application/json",
+            "Accept": "application/{}".format(format),
+            "Content-Type": "application/{}".format(format),
             "X-Rundeck-Auth-Token": self.token,
         }
         options = {
@@ -76,16 +78,26 @@ class Rundeck(object):
             options["json"] = params
 
         r = requests.request(method, url, **options)
-        logger.debug(r.content)
+        logger.debug(r.text)
         r.raise_for_status()
-        try:
-            return r.json()
-        except ValueError as e:
-            logger.error(e.message)
-            return r.content
+        if format == "json":
+            try:
+                return r.json()
+            except ValueError as e:
+                logger.error(e)
+                return r.text
+        else:
+            return r.text
 
-    def __get(self, url, params=None):
-        return self.__request("GET", url, params)
+    def __get(self, url, params=None, format="json"):
+        valid_format = ["json", "xml", "yaml"]
+        if not format in valid_format:
+            raise ValueError(
+                "Invalid Format. Possible Values are: {}".format(
+                    " ,".join(valid_format)
+                )
+            )
+        return self.__request("GET", url, params, format=format)
 
     def __post(self, url, params=None, upload_file=None):
         return self.__request("POST", url, params, upload_file)
@@ -102,6 +114,14 @@ class Rundeck(object):
     def get_token(self, token_id):
         url = "{}/token/{}".format(self.API_URL, token_id)
         return self.__get(url)
+
+    def get_job_def(self, job_id, format="xml"):
+        url = "{}/job/{}".format(self.API_URL, job_id)
+        return self.__get(url, format=format)
+
+    def get_job_meta(self, job_id):
+        url = "{}/job/{}/info".format(self.API_URL, job_id)
+        return self.__get(url, format="xml")
 
     def create_token(self, user, roles="*", duration=None):
         url = "{}/tokens/{}".format(self.API_URL, user)

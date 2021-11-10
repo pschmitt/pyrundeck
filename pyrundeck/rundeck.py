@@ -77,8 +77,8 @@ class Rundeck(object):
 
         r = requests.request(method, url, **options)
         logger.debug(r.content)
+        r.raise_for_status()
         if format == 'json':
-            r.raise_for_status()
             try:
                 return r.json()
             except ValueError as e:
@@ -88,6 +88,9 @@ class Rundeck(object):
             return r.text
 
     def __get(self, url, params=None, format='json'):
+        valid_format = ['json','xml','yaml']
+        if not format in valid_format:
+           raise ValueError("Invalid Format. Possible Values are: {}".format(' ,'.join(valid_format))) 
         return self.__request("GET", url, params, format=format)
 
     def __post(self, url, params=None, upload_file=None):

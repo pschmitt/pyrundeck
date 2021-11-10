@@ -85,7 +85,7 @@ class Rundeck(object):
                 logger.error(e.message)
                 return r.content
         else:
-           return r.text
+            return r.text
 
     def __get(self, url, params=None, format='json'):
         return self.__request("GET", url, params, format=format)

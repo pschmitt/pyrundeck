@@ -51,7 +51,7 @@ class Rundeck(object):
         )
         return r.cookies["JSESSIONID"]
 
-    def __request(self, method, url, params=None, upload_file=None, format='json'):
+    def __request(self, method, url, params=None, upload_file=None, format="json"):
         logger.info("{} {} Params: {}".format(method, url, params))
         cookies = dict()
         if self.auth_cookie:
@@ -78,7 +78,7 @@ class Rundeck(object):
         r = requests.request(method, url, **options)
         logger.debug(r.content)
         r.raise_for_status()
-        if format == 'json':
+        if format == "json":
             try:
                 return r.json()
             except ValueError as e:
@@ -87,10 +87,14 @@ class Rundeck(object):
         else:
             return r.text
 
-    def __get(self, url, params=None, format='json'):
-        valid_format = ['json','xml','yaml']
+    def __get(self, url, params=None, format="json"):
+        valid_format = ["json", "xml", "yaml"]
         if not format in valid_format:
-           raise ValueError("Invalid Format. Possible Values are: {}".format(' ,'.join(valid_format))) 
+            raise ValueError(
+                "Invalid Format. Possible Values are: {}".format(
+                    " ,".join(valid_format)
+                )
+            )
         return self.__request("GET", url, params, format=format)
 
     def __post(self, url, params=None, upload_file=None):
@@ -109,13 +113,13 @@ class Rundeck(object):
         url = "{}/token/{}".format(self.API_URL, token_id)
         return self.__get(url)
 
-    def get_job_def(self, job_id, format='xml'):
+    def get_job_def(self, job_id, format="xml"):
         url = "{}/job/{}".format(self.API_URL, job_id)
         return self.__get(url, format=format)
 
     def get_job_meta(self, job_id):
         url = "{}/job/{}/info".format(self.API_URL, job_id)
-        return self.__get(url, format='xml')
+        return self.__get(url, format="xml")
 
     def create_token(self, user, roles="*", duration=None):
         url = "{}/tokens/{}".format(self.API_URL, user)
@@ -208,9 +212,7 @@ class Rundeck(object):
                 return self._post_file(name, file, job_id, option_name, params)
 
         elif type(file) is _io.TextIOWrapper:
-            return self._post_file(
-                "tempfile", file, job_id, option_name, params
-            )
+            return self._post_file("tempfile", file, job_id, option_name, params)
 
         else:
             raise TypeError(
@@ -325,9 +327,7 @@ class Rundeck(object):
         return self.__get(url)
 
     def get_resource_info(self, project, resource):
-        url = "{}/project/{}/resource/{}".format(
-            self.API_URL, project, resource
-        )
+        url = "{}/project/{}/resource/{}".format(self.API_URL, project, resource)
         return self.__get(url)
 
 
@@ -340,8 +340,6 @@ if __name__ == "__main__":
     assert rundeck_url, "Rundeck URL is required"
     assert username, "Username is required"
     assert password, "Password is required"
-    rd = Rundeck(
-        rundeck_url, username=username, password=password, verify=False
-    )
+    rd = Rundeck(rundeck_url, username=username, password=password, verify=False)
     pprint(rd.list_projects())
     pprint(rd.list_all_jobs())

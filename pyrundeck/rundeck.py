@@ -84,7 +84,7 @@ class Rundeck(object):
             try:
                 return r.json()
             except ValueError as e:
-                logger.error(e.message)
+                logger.error(e)
                 return r.content
         else:
             return r.text

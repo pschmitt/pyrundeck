@@ -78,14 +78,14 @@ class Rundeck(object):
             options["json"] = params
 
         r = requests.request(method, url, **options)
-        logger.debug(r.content)
+        logger.debug(r.text)
         r.raise_for_status()
         if format == "json":
             try:
                 return r.json()
             except ValueError as e:
                 logger.error(e)
-                return r.content
+                return r.text
         else:
             return r.text
 

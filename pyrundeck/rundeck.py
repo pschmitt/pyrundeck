@@ -233,6 +233,7 @@ class Rundeck(object):
         log_level=None,
         as_user=None,
         node_filter=None,
+        run_at_time=None,
     ):
         url = "{}/job/{}/run".format(self.API_URL, job_id)
         params = {
@@ -240,6 +241,8 @@ class Rundeck(object):
             "asUser": as_user,
             "filter": node_filter,
         }
+        if run_at_time:
+            params.update({'runAtTime': run_at_time})
         if options is None:
             params["argString"] = args
         else:

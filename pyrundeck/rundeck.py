@@ -325,7 +325,7 @@ class Rundeck(object):
         return self.__delete(url)
 
     def bulk_delete_executions(self, exec_ids):
-        url = "{}/executions/{}/delete".format(self.API_URL)
+        url = "{}/executions/delete".format(self.API_URL)
         params = {"ids": exec_ids}
         return self.__post(url, params=params)
 

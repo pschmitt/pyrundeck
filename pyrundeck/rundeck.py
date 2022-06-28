@@ -10,7 +10,7 @@ import _io
 try:
     # Python 2
     from urlparse import urljoin
-except ModuleNotFoundError:
+except ImportError:
     # Python 3
     from urllib.parse import urljoin
 

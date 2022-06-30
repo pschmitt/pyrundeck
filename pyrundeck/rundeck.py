@@ -4,16 +4,10 @@ from __future__ import print_function, unicode_literals
 
 import logging
 import os
+from urllib.parse import urljoin
 
 import _io
 import requests
-
-try:
-    # Python 2
-    from urlparse import urljoin
-except ModuleNotFoundError:
-    # Python 3
-    from urllib.parse import urljoin
 
 logger = logging.getLogger(__name__)
 

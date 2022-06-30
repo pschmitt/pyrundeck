@@ -7,3 +7,6 @@ build/
 *~
 .idea/
 apidocs/
+.venv
+.envrc*
+

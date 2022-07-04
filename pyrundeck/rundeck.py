@@ -1,18 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
-from __future__ import unicode_literals
-from __future__ import print_function
 import logging
 import os
-import requests
-import _io
+from urllib.parse import urljoin
 
-try:
-    # Python 2
-    from urlparse import urljoin
-except ModuleNotFoundError:
-    # Python 3
-    from urllib.parse import urljoin
+import _io
+import requests
 
 logger = logging.getLogger(__name__)
 
@@ -91,7 +84,7 @@ class Rundeck(object):
 
     def __get(self, url, params=None, format="json"):
         valid_format = ["json", "xml", "yaml"]
-        if not format in valid_format:
+        if format not in valid_format:
             raise ValueError(
                 "Invalid Format. Possible Values are: {}".format(
                     " ,".join(valid_format)
@@ -327,7 +320,7 @@ class Rundeck(object):
         return self.__delete(url)
 
     def bulk_delete_executions(self, exec_ids):
-        url = "{}/executions/{}/delete".format(self.API_URL)
+        url = "{}/executions/delete".format(self.API_URL)
         params = {"ids": exec_ids}
         return self.__post(url, params=params)
 

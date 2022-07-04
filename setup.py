@@ -16,5 +16,5 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     install_requires=["requests"],
-    extras_require={'apidocs':['pydoctor>=22.5.1']},
+    extras_require={"apidocs": ["pydoctor>=22.5.1"]},
 )

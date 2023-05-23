@@ -244,7 +244,9 @@ class Rundeck(object):
         return self.run_job(job["id"], *args, **kwargs)
 
     def get_executions_for_job(self, job_id=None, job_name=None, **kwargs):
-        # http://rundeck.org/docs/api/#getting-executions-for-a-job
+        """
+        `Docs <https://docs.rundeck.com/docs/api/rundeck-api.html#getting-executions-for-a-job>`_
+        """
         if not job_id:
             if not job_name:
                 raise RuntimeError("Either job_name or job_id is required")
@@ -267,7 +269,10 @@ class Rundeck(object):
         max_results=20,
         offset=0,
     ):
-        # http://rundeck.org/docs/api/#execution-query
+        """
+        `Docs <https://docs.rundeck.com/docs/api/rundeck-api.html#execution-query>`_
+        """
+
         url = "{}/project/{}/executions".format(self.API_URL, project)
         params = {
             "jobListFilter": name,

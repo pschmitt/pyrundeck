@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 class Rundeck(object):
-    
+    """ Rundeck class """
     def __init__(
         self,
         rundeck_url,
@@ -86,11 +86,9 @@ class Rundeck(object):
 
     def __get(self, url:str, params=None, format_output:str="json"):
         valid_format = ["json", "xml", "yaml"]
-        if format not in valid_format:
+        if format_output not in valid_format:
             raise ValueError(
-                "Invalid Format. Possible Values are: {}".format(
-                    " ,".join(valid_format)
-                )
+                f"Invalid Format. Possible Values are: {' ,'.join(valid_format)}"
             )
         return self.__request("GET", url, params, format_output=format_output)
 
@@ -330,10 +328,18 @@ class Rundeck(object):
         url = "{}/project/{}/resources".format(self.API_URL, project)
         return self.__get(url)
 
-    def get_resource_info(self, project, resource):
-        url = "{}/project/{}/resource/{}".format(
-            self.API_URL, project, resource
-        )
+    def get_resource_info(self, project:str, resource:str):
+        """ Get resource info
+        https://docs.rundeck.com/docs/api/rundeck-api.html#getting-resource-info
+        
+        Parameters
+        ----------
+        project : str
+            Project name
+        resource : str
+            Resource name
+        """
+        url = f"{self.API_URL}/project/{project}/resource/{resource}"
         return self.__get(url)
 
 

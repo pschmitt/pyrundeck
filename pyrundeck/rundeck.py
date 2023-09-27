@@ -88,7 +88,7 @@ class Rundeck(object):
         valid_format = ["json", "xml", "yaml"]
         if format_output not in valid_format:
             raise ValueError(
-                f"Invalid Format. Possible Values are: {' ,'.join(valid_format)}"
+                f"Invalid Format. Possible Values are: {','.join(valid_format)}"
             )
         return self.__request("GET", url, params, format_output=format_output)
 

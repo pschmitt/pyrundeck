@@ -1,10 +1,9 @@
 #!/usr/bin/env python
 # coding: utf-8
 import logging
+import io
 import os
 from urllib.parse import urljoin
-
-import io
 import requests
 
 logger = logging.getLogger(__name__)
@@ -36,7 +35,7 @@ class Rundeck(object):
     def auth(self):
         url = urljoin(self.rundeck_url, "/j_security_check")
         p = {"j_username": self.username, "j_password": self.password}
-        r = requests.post(
+        req = requests.post(
             url,
             timeout=10,
             data=p,
@@ -45,7 +44,7 @@ class Rundeck(object):
             # return r.history[0].cookies['JSESSIONID']
             allow_redirects=False,
         )
-        return r.cookies["JSESSIONID"]
+        return req.cookies["JSESSIONID"]
 
     def __request(
         self,
@@ -60,14 +59,14 @@ class Rundeck(object):
         if self.auth_cookie:
             cookies["JSESSIONID"] = self.auth_cookie
 
-        h = {
-            "Accept": "application/{}".format(format_output),
-            "Content-Type": "application/{}".format(format_output),
+        header = {
+            "Accept": f"application/{format_output}",
+            "Content-Type": f"application/{format_output}",
             "X-Rundeck-Auth-Token": self.token,
         }
         options = {
             "cookies": cookies,
-            "headers": h,
+            "headers": header,
             "verify": self.verify,
         }
         if method == "GET":
@@ -94,7 +93,7 @@ class Rundeck(object):
         valid_format = ["json", "xml", "yaml"]
         if format_output not in valid_format:
             raise ValueError(
-                f"Invalid Format. Possible Values are: {','.join(valid_format)}"
+                f"Invalid Format. Possible Values are:{','.join(valid_format)}"
             )
         return self.__request("GET", url, params, format_output=format_output)
 
@@ -314,24 +313,24 @@ class Rundeck(object):
         return self.__get(url)
 
     def execution_info_by_id(self, exec_id):
-        url = "{}/execution/{}".format(self.API_URL, exec_id)
+        url = f"{self.API_URL}/execution/{exec_id}"
         return self.__get(url)
 
     def abort_execution(self, exec_id):
-        url = "{}/execution/{}/abort".format(self.API_URL, exec_id)
+        url = f"{self.API_URL}/execution/{exec_id}/abort"
         return self.__get(url)
 
     def delete_execution(self, exec_id):
-        url = "{}/execution/{}".format(self.API_URL, exec_id)
+        url = "{self.API_URL}/execution/{exec_id}"
         return self.__delete(url)
 
     def bulk_delete_executions(self, exec_ids):
-        url = "{}/executions/delete".format(self.API_URL)
+        url = f"{self.API_URL}/executions/delete"
         params = {"ids": exec_ids}
         return self.__post(url, params=params)
 
     def list_resources(self, project):
-        url = "{}/project/{}/resources".format(self.API_URL, project)
+        url = f"{self.API_URL}/project/{project}/resources"
         return self.__get(url)
 
     def get_resource_info(self, project: str, resource: str):

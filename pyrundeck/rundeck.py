@@ -11,7 +11,8 @@ logger = logging.getLogger(__name__)
 
 
 class Rundeck(object):
-    """ Rundeck class """
+    """Rundeck class"""
+
     def __init__(
         self,
         rundeck_url,
@@ -42,12 +43,17 @@ class Rundeck(object):
             verify=self.verify,
             # Disable redirects, otherwise we get redirected twice and need to
             # return r.history[0].cookies['JSESSIONID']
-            allow_redirects=False
+            allow_redirects=False,
         )
         return r.cookies["JSESSIONID"]
 
     def __request(
-        self, method:str, url:str, params=None, upload_file=None, format_output:str="json"
+        self,
+        method: str,
+        url: str,
+        params=None,
+        upload_file=None,
+        format_output: str = "json",
     ):
         logger.info("%s %s Params: %s", method, url, params)
         cookies = dict()
@@ -84,7 +90,7 @@ class Rundeck(object):
         else:
             return r.text
 
-    def __get(self, url:str, params=None, format_output:str="json"):
+    def __get(self, url: str, params=None, format_output: str = "json"):
         valid_format = ["json", "xml", "yaml"]
         if format_output not in valid_format:
             raise ValueError(
@@ -157,8 +163,8 @@ class Rundeck(object):
         url = "{}/projects".format(self.API_URL)
         return self.__get(url)
 
-    def get_project_config(self, project_name:str):
-        """ Get project configuration """
+    def get_project_config(self, project_name: str):
+        """Get project configuration"""
         url = f"{self.API_URL}/project/{project_name}/config"
         return self.__get(url)
 
@@ -328,10 +334,10 @@ class Rundeck(object):
         url = "{}/project/{}/resources".format(self.API_URL, project)
         return self.__get(url)
 
-    def get_resource_info(self, project:str, resource:str):
-        """ Get resource info
+    def get_resource_info(self, project: str, resource: str):
+        """Get resource info
         https://docs.rundeck.com/docs/api/rundeck-api.html#getting-resource-info
-        
+
         Parameters
         ----------
         project : str

@@ -1,3 +1,9 @@
+# 🚮 Archived!
+
+If you're interested in maintaining this package please get in touch with me at:
+
+https://github.com/pschmitt/contact/issues/new
+
 # Rundeck REST API client
 
 ![PyPI](https://img.shields.io/pypi/v/pyrundeck)
@@ -34,10 +40,10 @@ Example using the file upload option
 from pyrundeck import rundeck
 
 rd = Rundeck(
-        rundeck_url, 
-        username=username, 
-        password=password, 
-        verify=False, 
+        rundeck_url,
+        username=username,
+        password=password,
+        verify=False,
         api_version=19  # Required for file upload option
     )
 # Use the file_key returned in the response to reference the file when running a job

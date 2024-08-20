@@ -13,6 +13,8 @@ https://github.com/pschmitt/contact/issues/new
 
 This is a Python REST API client for Rundeck 2.6+
 
+Read the [API documentation](https://pschmitt.github.io/pyrundeck/).
+
 ## Example
 
 ```python

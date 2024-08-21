@@ -157,7 +157,7 @@ class Rundeck(object):
         url = "{}/projects".format(self.API_URL)
         return self.__get(url)
 
-    def list_jobs(self, project:str, tags:str=None):
+    def list_jobs(self, project: str, tags: str = None):
         """
         List the jobs that exist for a project
         https://docs.rundeck.com/docs/api/#listing-jobs
@@ -165,9 +165,9 @@ class Rundeck(object):
         Parameters
         ----------
         project : str
-            Name of the project to retrieve jobs 
+            Name of the project to retrieve jobs
         tags : str (optional) (Enterprise only)
-            Specify a tag or comma separated list of tags to list Jobs that have 
+            Specify a tag or comma separated list of tags to list Jobs that have
             matching tags. (e.g. tags=tag1,tag2)
         """
 
@@ -177,10 +177,22 @@ class Rundeck(object):
 
         return self.__get(url)
 
-    def list_all_jobs(self):
+    def list_all_jobs(self, tags: str = None):
+        """
+        List all jobs on every project
+        https://docs.rundeck.com/docs/api/#listing-jobs
+
+        Parameters
+        ----------
+        tags : str (optional) (Enterprise only)
+            Specify a tag or comma separated list of tags to list Jobs that have
+            matching tags. (e.g. tags=tag1,tag2)
+        """
+
         jobs = []
         for p in self.list_projects():
-            jobs += self.list_jobs(p["name"])
+            jobs += self.list_jobs(p["name"], tags)
+
         return jobs
 
     def get_job(self, name, project=None):

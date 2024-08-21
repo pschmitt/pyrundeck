@@ -113,9 +113,9 @@ class Rundeck(object):
         url = "{}/token/{}".format(self.API_URL, token_id)
         return self.__get(url)
 
-    def get_job_def(self, job_id, format_output="xml"):
+    def get_job_def(self, job_id, format="xml"):
         url = "{}/job/{}".format(self.API_URL, job_id)
-        return self.__get(url, format_output=format_output)
+        return self.__get(url, format_output=format)
 
     def get_job_meta(self, job_id):
         url = "{}/job/{}/info".format(self.API_URL, job_id)

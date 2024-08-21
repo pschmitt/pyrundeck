@@ -167,8 +167,8 @@ class Rundeck(object):
         project : str
             Name of the project to retrieve jobs
         tags : str (optional) (Enterprise only)
-            Specify a tag or comma separated list of tags to list Jobs that have
-            matching tags. (e.g. tags=tag1,tag2)
+            Specify a tag or comma separated list of tags to list Jobs
+            that have matching tags. (e.g. tags=tag1,tag2)
         """
 
         url = f"{self.API_URL}/project/{project}/jobs"
@@ -185,8 +185,8 @@ class Rundeck(object):
         Parameters
         ----------
         tags : str (optional) (Enterprise only)
-            Specify a tag or comma separated list of tags to list Jobs that have
-            matching tags. (e.g. tags=tag1,tag2)
+            Specify a tag or comma separated list of tags to list Jobs
+            that have matching tags. (e.g. tags=tag1,tag2)
         """
 
         jobs = []

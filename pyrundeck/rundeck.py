@@ -1,16 +1,17 @@
 #!/usr/bin/env python
 # coding: utf-8
 import logging
+import io
 import os
 from urllib.parse import urljoin
-
-import _io
 import requests
 
 logger = logging.getLogger(__name__)
 
 
 class Rundeck(object):
+    """Rundeck class"""
+
     def __init__(
         self,
         rundeck_url,
@@ -21,7 +22,7 @@ class Rundeck(object):
         verify=True,
     ):
         self.rundeck_url = rundeck_url
-        self.API_URL = "{}/api/{}".format(rundeck_url, api_version)
+        self.API_URL = f"{rundeck_url}/api/{api_version}"
         self.token = token
         self.username = username
         self.password = password
@@ -34,32 +35,38 @@ class Rundeck(object):
     def auth(self):
         url = urljoin(self.rundeck_url, "/j_security_check")
         p = {"j_username": self.username, "j_password": self.password}
-        r = requests.post(
+        req = requests.post(
             url,
+            timeout=10,
             data=p,
             verify=self.verify,
             # Disable redirects, otherwise we get redirected twice and need to
             # return r.history[0].cookies['JSESSIONID']
             allow_redirects=False,
         )
-        return r.cookies["JSESSIONID"]
+        return req.cookies["JSESSIONID"]
 
     def __request(
-        self, method, url, params=None, upload_file=None, format="json"
+        self,
+        method: str,
+        url: str,
+        params=None,
+        upload_file=None,
+        format_output: str = "json",
     ):
-        logger.info("{} {} Params: {}".format(method, url, params))
+        logger.info("%s %s Params: %s", method, url, params)
         cookies = dict()
         if self.auth_cookie:
             cookies["JSESSIONID"] = self.auth_cookie
 
-        h = {
-            "Accept": "application/{}".format(format),
-            "Content-Type": "application/{}".format(format),
+        header = {
+            "Accept": f"application/{format_output}",
+            "Content-Type": f"application/{format_output}",
             "X-Rundeck-Auth-Token": self.token,
         }
         options = {
             "cookies": cookies,
-            "headers": h,
+            "headers": header,
             "verify": self.verify,
         }
         if method == "GET":
@@ -70,10 +77,10 @@ class Rundeck(object):
         else:
             options["json"] = params
 
-        r = requests.request(method, url, **options)
+        r = requests.request(method, url, timeout=10, **options)
         logger.debug(r.text)
         r.raise_for_status()
-        if format == "json":
+        if format_output == "json":
             try:
                 return r.json()
             except ValueError as e:
@@ -82,15 +89,13 @@ class Rundeck(object):
         else:
             return r.text
 
-    def __get(self, url, params=None, format="json"):
+    def __get(self, url: str, params=None, format_output: str = "json"):
         valid_format = ["json", "xml", "yaml"]
-        if format not in valid_format:
+        if format_output not in valid_format:
             raise ValueError(
-                "Invalid Format. Possible Values are: {}".format(
-                    " ,".join(valid_format)
-                )
+                f"Invalid Format. Possible Values are:{','.join(valid_format)}"
             )
-        return self.__request("GET", url, params, format=format)
+        return self.__request("GET", url, params, format_output=format_output)
 
     def __post(self, url, params=None, upload_file=None):
         return self.__request("POST", url, params, upload_file)
@@ -110,11 +115,11 @@ class Rundeck(object):
 
     def get_job_def(self, job_id, format="xml"):
         url = "{}/job/{}".format(self.API_URL, job_id)
-        return self.__get(url, format=format)
+        return self.__get(url, format_output=format)
 
     def get_job_meta(self, job_id):
         url = "{}/job/{}/info".format(self.API_URL, job_id)
-        return self.__get(url, format="xml")
+        return self.__get(url, format_output="xml")
 
     def create_token(self, user, roles="*", duration=None):
         url = "{}/tokens/{}".format(self.API_URL, user)
@@ -155,6 +160,11 @@ class Rundeck(object):
 
     def list_projects(self):
         url = "{}/projects".format(self.API_URL)
+        return self.__get(url)
+
+    def get_project_config(self, project_name: str):
+        """Get project configuration"""
+        url = f"{self.API_URL}/project/{project_name}/config"
         return self.__get(url)
 
     def list_jobs(self, project):
@@ -206,7 +216,7 @@ class Rundeck(object):
             with open(name, "rb") as file:
                 return self._post_file(name, file, job_id, option_name, params)
 
-        elif type(file) is _io.TextIOWrapper:
+        elif type(file) is io.TextIOWrapper:
             return self._post_file(
                 "tempfile", file, job_id, option_name, params
             )
@@ -303,30 +313,38 @@ class Rundeck(object):
         return self.__get(url)
 
     def execution_info_by_id(self, exec_id):
-        url = "{}/execution/{}".format(self.API_URL, exec_id)
+        url = f"{self.API_URL}/execution/{exec_id}"
         return self.__get(url)
 
     def abort_execution(self, exec_id):
-        url = "{}/execution/{}/abort".format(self.API_URL, exec_id)
+        url = f"{self.API_URL}/execution/{exec_id}/abort"
         return self.__get(url)
 
     def delete_execution(self, exec_id):
-        url = "{}/execution/{}".format(self.API_URL, exec_id)
+        url = "{self.API_URL}/execution/{exec_id}"
         return self.__delete(url)
 
     def bulk_delete_executions(self, exec_ids):
-        url = "{}/executions/delete".format(self.API_URL)
+        url = f"{self.API_URL}/executions/delete"
         params = {"ids": exec_ids}
         return self.__post(url, params=params)
 
     def list_resources(self, project):
-        url = "{}/project/{}/resources".format(self.API_URL, project)
+        url = f"{self.API_URL}/project/{project}/resources"
         return self.__get(url)
 
-    def get_resource_info(self, project, resource):
-        url = "{}/project/{}/resource/{}".format(
-            self.API_URL, project, resource
-        )
+    def get_resource_info(self, project: str, resource: str):
+        """Get resource info
+        https://docs.rundeck.com/docs/api/rundeck-api.html#getting-resource-info
+
+        Parameters
+        ----------
+        project : str
+            Project name
+        resource : str
+            Resource name
+        """
+        url = f"{self.API_URL}/project/{project}/resource/{resource}"
         return self.__get(url)
 
 

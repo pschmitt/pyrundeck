@@ -157,6 +157,10 @@ class Rundeck(object):
         url = "{}/projects".format(self.API_URL)
         return self.__get(url)
 
+    def get_project_config(self, project_name):
+        url = "{}/project/{}/config".format(self.API_URL, project_name)
+        return self.__get(url)
+
     def list_jobs(self, project):
         url = "{}/project/{}/jobs".format(self.API_URL, project)
         return self.__get(url)

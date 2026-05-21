@@ -6,5 +6,7 @@ build/
 *.egg-info/
 *~
 .idea/
+apidocs/
 .venv
 .envrc*
+

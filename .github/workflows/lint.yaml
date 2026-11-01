@@ -8,26 +8,16 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+        python-version: ["3.13", "3.14", "3.15"]
 
     steps:
     - uses: actions/checkout@v7
 
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v7
+    - name: Run Python lint checks
+      uses: pschmitt/ci-workflows/.github/actions/python-lint@main
       with:
         python-version: ${{ matrix.python-version }}
-
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install flake8 black
-        if [[ -f requirements.txt ]]; then pip install -r requirements.txt; fi
-
-    - name: Black
-      run: |
-        black --check --verbose .
-
-    - name: Lint with flake8
-      run: |
-        flake8 . --show-source --statistics
+        flake8-mode: custom
+        requirements-file: requirements.txt
+        black-args: --check --verbose .
+        flake8-args: . --show-source --statistics
